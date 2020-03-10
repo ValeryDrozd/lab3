@@ -2,8 +2,8 @@
 using namespace std;
 
 map <int, vector <int> > graph;
-int n,m,start,fin,start,fin;
-vector <int> v;
+int n,m,start,fin;
+vector <int> path;
 int* graphlist;
 void readGraph(char filename[]){
     ifstream f(filename);
@@ -33,11 +33,11 @@ void readGraph(char filename[]){
 
 void makeGraph(){
     for(int i=1;i<=n*m;i++){
-        if(a[i]!=-1){
-            if(i - m > 0 && a[i-m]!=-1){graph[i].push_back(i-m);}
-            if(i + m <= n*m && a[i+m]!=-1){graph[i].push_back(i+m);}
-            if((i+1)%m!=0 && i!=n*m && a[i+1]!=-1){graph[i].push_back(i+1);}
-            if((i+1)%m!=1 && i!=1 && a[i-1]!=-1){graph[i].push_back(i-1);}
+        if(graphlist[i]!=-1){
+            if(i - m > 0 && graphlist[i-m]!=-1){graph[i].push_back(i-m);}
+            if(i + m <= n*m && graphlist[i+m]!=-1){graph[i].push_back(i+m);}
+            if((i+1)%m!=0 && i!=n*m && graphlist[i+1]!=-1){graph[i].push_back(i+1);}
+            if((i+1)%m!=1 && i!=1 && graphlist[i-1]!=-1){graph[i].push_back(i-1);}
 
         }
     }
@@ -56,27 +56,35 @@ int theLeastIndex(int n,int a[]){
 void djikstra(){
     set < pair <int,int> > st;
     st.clear();
-    bool visited[n*m+1] = false;
-    int from[n*m+1];
-    st.insert(make_pair(0,s));
+    bool visited[n*m+1] = {false};
+    int from[n*m+1] = {0};
+    st.insert(make_pair(0,start));
     while(!st.empty())
     {
-        it=st.begin();
-        v=it->second;
+        auto it=st.begin();
+        int v=it->second;
         visited[v]=1;
         from[v] = it->first;
         st.erase(st.begin());
         for(int i = 0;i<graph[i].size();i++){
-            if(visited[graph[v][i]==0){
+            if(visited[graph[v][i]]==0){
                 st.insert(make_pair(v,graph[v][i]));
             }
         }
     }
+    cout<<"Djikstra finished\n";
+
+    int current = fin;
+    while(current!=0){
+        path.push_back(current);
+        current = from[current];
+    }
+    cout<<"Path finished\n";
+    path.push_back(start);
+    for(int i=0;i<path.size();i++)
+        graphlist[path[i]] = i+1;
 }
 
-void getPath(){
-
-}
 
 void output(char filename[]){
     ofstream f(filename);
@@ -99,8 +107,7 @@ int main(){
     gets(filename);
     readGraph(filename);
     makeGraph();
-    /*djikstra();
-    get_path();*/
+    djikstra();
     cout<<"Enter path to out the file\n";
     gets(filename);
     output(filename);
