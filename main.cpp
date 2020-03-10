@@ -44,11 +44,37 @@ void makeGraph(){
     cout<<"Graph is made\n";
 }
 
-void djikstra(){
 
+int theLeastIndex(int n,int a[]){
+    int minElem = INT_MAX,minIndex = 0;
+    for(int i=1;i<=n;i++){
+        if(a[i]<minElem){minElem = a[i]; minIndex = i;}
+    }
+    return minIndex;
 }
 
-void get_path(){
+void djikstra(){
+    set < pair <int,int> > st;
+    st.clear();
+    bool visited[n*m+1] = false;
+    int from[n*m+1];
+    st.insert(make_pair(0,s));
+    while(!st.empty())
+    {
+        it=st.begin();
+        v=it->second;
+        visited[v]=1;
+        from[v] = it->first;
+        st.erase(st.begin());
+        for(int i = 0;i<graph[i].size();i++){
+            if(visited[graph[v][i]==0){
+                st.insert(make_pair(v,graph[v][i]));
+            }
+        }
+    }
+}
+
+void getPath(){
 
 }
 
