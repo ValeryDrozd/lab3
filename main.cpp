@@ -10,7 +10,6 @@ void readGraph(char filename[]){
     if(!f){cout<<"Error during reading file\n";exit(1);}
     f>>n>>m;
     graphlist = new int[n*m+1];
-    *graphlist = {-1};
     for(int i=0;i<=n*m+1;i++)
         graphlist[i] = -1;
     f.ignore(256,'\n');
@@ -18,7 +17,7 @@ void readGraph(char filename[]){
     for(int i=1;i<=n;i++){
         getline(f,s);
         s = " " + s;
-        for(int j=1;j<=m*2+1;j+=2){
+        for(int j=1;j<=m*2;j+=2){
             if(s[j]!='X'){
                 graphlist[(i-1)*n+(j/2)+1] = 0;
                 if(s[j] == 'F')fin = (i-1)*n+(j/2)+1;
@@ -44,21 +43,13 @@ void makeGraph(){
     cout<<"Graph is made\n";
 }
 
-
-int theLeastIndex(int n,int a[]){
-    int minElem = INT_MAX,minIndex = 0;
-    for(int i=1;i<=n;i++){
-        if(a[i]<minElem){minElem = a[i]; minIndex = i;}
-    }
-    return minIndex;
-}
-
 void djikstra(){
     set < pair <int,int> > st;
     st.clear();
     bool visited[n*m+1] = {false};
     int from[n*m+1] = {0};
     st.insert(make_pair(0,start));
+    int t = graph[fin].size();
     while(!st.empty())
     {
         auto it=st.begin();
@@ -66,11 +57,12 @@ void djikstra(){
         visited[v]=1;
         from[v] = it->first;
         st.erase(st.begin());
-        for(int i = 0;i<graph[i].size();i++){
+        for(int i = 0;i<graph[v].size();i++){
             if(visited[graph[v][i]]==0){
                 st.insert(make_pair(v,graph[v][i]));
             }
         }
+
     }
     cout<<"Djikstra finished\n";
 
@@ -81,20 +73,23 @@ void djikstra(){
     }
     cout<<"Path finished\n";
     path.push_back(start);
-    for(int i=0;i<path.size();i++)
-        graphlist[path[i]] = i+1;
+    for(int i=path.size()-1;i>=0;i--){
+        graphlist[path[i]] = path.size() - i - 1;
+    }
+
 }
 
 
 void output(char filename[]){
+    remove(filename);
     ofstream f(filename);
     if(!f){cout<<"Error during reading the file\n";exit(1);}
     for(int i=1;i<=n*m;i++){
-        if(graphlist[i]==-1)f<<"X ";
+        if(graphlist[i]==-1)f<<"X"<<"\t";
         else
-        if(graphlist[i]==0)f<<"  ";
+        if(graphlist[i]==0)f<<"\t";
         else
-            f<<graphlist[i]<<' ';
+            f<<graphlist[i]<<'\t';
         if(i%n==0)f<<endl;
     }
     f.close();
