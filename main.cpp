@@ -43,7 +43,7 @@ void makeGraph(){
     cout<<"Graph is made\n";
 }
 
-void djikstra(){
+int djikstra(){
     set < pair <int,int> > st;
     st.clear();
     bool visited[n*m+1] = {false};
@@ -65,7 +65,7 @@ void djikstra(){
 
     }
     cout<<"Djikstra finished\n";
-
+    if(visited[fin]==0)return 0;
     int current = fin;
     while(current!=0){
         path.push_back(current);
@@ -76,7 +76,7 @@ void djikstra(){
     for(int i=path.size()-1;i>=0;i--){
         graphlist[path[i]] = path.size() - i - 1;
     }
-
+    return 1;
 }
 
 
@@ -98,12 +98,15 @@ void output(char filename[]){
 ///
 int main(){
     char filename[256];
-    cout<<"Enter path to enter file\n";
+    cout<<"Enter path to file with the maze\n";
     gets(filename);
     readGraph(filename);
     makeGraph();
-    djikstra();
-    cout<<"Enter path to out the file\n";
-    gets(filename);
-    output(filename);
+    if(djikstra()==1){
+        cout<<"Enter path to the file with output\n";
+        gets(filename);
+        output(filename);
+        return 0;
+    }
+    cout<<"There is no way from start to finish";
 }
