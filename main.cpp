@@ -1,61 +1,118 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+
+///==================
+///CLASS WITH NODE(TOP OF THE GRAPH)
+///==================
+class graphNode{
+public:
+    bool wall;
+    int row,col;
+    vector <int> linked;
+    graphNode(){
+        this->wall = 1;
+        this->row = 1;
+        this->col = 1;
+    }
+    graphNode(int col,int row,bool wall = 1){
+        this->wall = wall;
+        this->row = row;
+        this->col = col;
+    }
+    ~graphNode(){
+
+    }
+    void makeLink(int finish){
+        this->linked.push_back(finish);
+    }
+    int distance(graphNode *to){
+        return abs(to->col - this->col)+abs(to->row - this->row);
+    }
+};
+
+
+///========================
+///Class with node of queue
+///========================
+class queueNode
+{
+public:
+    graphNode val;
+    queueNode* next;
+    queueNode();
+    ~queueNode();
+
+};
+
+
+
+//=========================
+//Class with priority queue
+//=========================
+class priorityQueue
+{
+public:
+    int sz;
+    queueNode *head;
+    priorityQueue(){
+        this->sz = 0;
+        this->head = nullptr;
+    }
+    void pop(){
+        if(this->sz==0)return;
+        else{
+                queueNode temp = new queueNode;
+                temp = this->head;
+                this->head = this->head->next;
+                delete temp;
+                this->sz--;
+        }
+    }
+    void push(graphNode val,graphNode finish){
+        queueNode temp = this->head;
+        while(temp->next!=nullptr && val.distance(finish)>temp->next->val.distance(finish)){
+            temp = temp->next;
+        }
+        queueNode toPush = new queueNode;
+        toPush->val = val;
+        toPush->next = temp->next;
+        temp->next = toPush;
+        this->sz++;
+    }
+    graphNode front(){
+        return head->val;
+    }
+    ~priorityQueue();
+
+};
+
+
+
+///=====================
+///CLASS WITH GRAPH
+///=====================
 class graph{
-
-    ///==================
-    ///CLASS WITH NODE(TOP OF THE GRAPH)
-    ///==================
-    class Node{
-    public:
-        bool wall;
-        int row,col;
-        vector <int> linked;
-        Node(){
-            this.wall = 1;
-            this.row = 1;
-            this.col = 1;
-        }
-        Node(int col,int row,bool wall = 1){
-            this.number = number;
-            this.wall = wall;
-            this.row = row;
-            this.col = col;
-        }
-        ~Node(){
-
-        }
-        void makeLink(int finish){
-            this.linked.push_back(finish);
-        }
-        int distance(Node *to){
-            return abs(to->col - this->col)+abs(to->row - this->row);
-        }
-    };
-    ///=====================
-    ///CLASS WITH GRAPH
-    ///=====================
     int n,m,start,finish;
-    //int* graphlist;
-    Node* graphtops;
+    graphNode* graphtops;
     graph(){
         ifstream f;
         char filename[256];
         cout<<"Enter path to file with maze\n";
         gets(filename);
         f.open(filename);
-        f>>this.n>>this.m;
-        this->graphtops = new Node[this.n*this.m+1];
+        f>>this->n>>this->m;
+        this->graphtops = new graphNode[this->n*this->m+1];
         f.ignore(256,'\n');
         string s;
         for(int i=1;i<=n;i++){
             getline(f,s);
             s = " " + s;
             for(int j=1;j<=m*2;j+=2){
-                if(s[j]=='S')this.start = (i-1)*n+(j/2)+1;
+                if(s[j]=='S')this->start = (i-1)*n+(j/2)+1;
                 else
-                if(s[j]=='F')this.finish = (i-1)*n+(j/2)+1;
-                graphtops = new Node(i,(i-1)*n+(j/2)+1,(s[j]=='X'));
+                if(s[j]=='F')this->finish = (i-1)*n+(j/2)+1;
+                graphtops = new graphNode(i,(i-1)*n+(j/2)+1,(s[j]=='X'));
             }
         }
         f.close();
@@ -76,6 +133,7 @@ class graph{
     ~graph(){
 
     }
+
     void output(){
 
     }
