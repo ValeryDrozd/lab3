@@ -8,7 +8,7 @@ using namespace std;
 class graphNode{
 public:
     bool wall;
-    int row,col;
+    int row,col,pathNumb;
     vector <int> linked;
     graphNode(){
         this->wall = 1;
@@ -19,6 +19,7 @@ public:
         this->wall = wall;
         this->row = row;
         this->col = col;
+        this->pathNumb = -1;
     }
     ~graphNode(){
 
@@ -47,9 +48,9 @@ public:
 
 
 
-//=========================
-//Class with priority queue
-//=========================
+///=========================
+///Class with priority queue
+///=========================
 class priorityQueue
 {
 public:
@@ -95,6 +96,7 @@ public:
 class graph{
     int n,m,start,finish;
     graphNode* graphtops;
+    vector <int> path;
     graph(){
         ifstream f;
         char filename[256];
@@ -120,13 +122,13 @@ class graph{
         for(int i=1;i<=n*m;i++){
             if(!graphtops[i].wall){
                 if(i - m > 0 && !(graphtops[i-m].wall)){
-                        graphtops[i].linked.push_back(i-m);}
+                        this->graphtops[i]->linked.push_back(i-m);}
                 if(i + m <= n*m && !(graphtops[i+m].wall)){
-                        graphtops[i].linked.push_back(i+m);}
+                        this->graphtops[i]->linked.push_back(i+m);}
                 if((i+1)%m!=0 && i!=n*m && !(graphtops[i+1].wall)){
-                        graphtops[i].linked.push_back(i+1);}
+                        this->graphtops[i]->linked.push_back(i+1);}
                 if((i+1)%m!=1 && i!=1 && !(graphtops[i-1].wall)){
-                        graphtops[i].linked.push_back(i-1);}
+                        this->graphtops[i]->linked.push_back(i-1);}
             }
         }
     }
@@ -134,8 +136,26 @@ class graph{
 
     }
 
-    void output(){
+    void astar(){
+        int distance[n*m+1] = {INT_MAX};
 
+    }
+
+    void output(){
+        char filename
+        remove(filename);
+        ofstream f(filename);
+        if(!f){cout<<"Error during reading the file\n";exit(1);}
+        for(int i=1;i<=n*m;i++){
+            if(this->graphtops[i].wall)f<<"X"<<"\t";
+            else
+            if(this->graphtops[i].pathNumb==-1)f<<" \t";
+            else
+                f<<this->graphtops[i].pathNumb<<'\t';
+            if(i%n==0)f<<endl;
+        }
+        f.close();
+        cout<<"Writing to the file completed\n";
     }
 
 };
