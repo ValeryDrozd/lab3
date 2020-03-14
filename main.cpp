@@ -1,7 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-
 ///==================
 ///CLASS WITH NODE(TOP OF THE GRAPH)
 ///==================
@@ -115,7 +114,7 @@ class graph{
                 if(s[j]=='S')this->start = (i-1)*n+(j/2)+1;
                 else
                 if(s[j]=='F')this->finish = (i-1)*n+(j/2)+1;
-                graphtops = new graphNode(i,(i-1)*n+(j/2)+1,(s[j]=='X'));
+                this->graphtops[(i-1)*n+(j/2)+1] = graphNode(i,(j/2)+1,(s[j]=='X'));
             }
         }
         f.close();
@@ -132,6 +131,7 @@ class graph{
                         this->graphtops[i].linked.push_back(i-1);}
             }
         }
+        cout<<"Graph is made\n";
     }
     ~graph(){
 
@@ -164,5 +164,6 @@ class graph{
 };
 
 int main(){
-
+    graph g;
+    g.output();
 }
