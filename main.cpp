@@ -27,8 +27,8 @@ public:
     void makeLink(int finish){
         this->linked.push_back(finish);
     }
-    int distance(graphNode *to){
-        return abs(to->col - this->col)+abs(to->row - this->row);
+    int distance(graphNode to){
+        return abs(to.col - this->col)+abs(to.row - this->row);
     }
 };
 
@@ -63,7 +63,7 @@ public:
     void pop(){
         if(this->sz==0)return;
         else{
-                queueNode temp = new queueNode;
+                queueNode* temp = new queueNode;
                 temp = this->head;
                 this->head = this->head->next;
                 delete temp;
@@ -71,11 +71,11 @@ public:
         }
     }
     void push(graphNode val,graphNode finish){
-        queueNode temp = this->head;
+        queueNode* temp = this->head;
         while(temp->next!=nullptr && val.distance(finish)>temp->next->val.distance(finish)){
             temp = temp->next;
         }
-        queueNode toPush = new queueNode;
+        queueNode* toPush = new queueNode;
         toPush->val = val;
         toPush->next = temp->next;
         temp->next = toPush;
@@ -94,6 +94,7 @@ public:
 ///CLASS WITH GRAPH
 ///=====================
 class graph{
+    public:
     int n,m,start,finish;
     graphNode* graphtops;
     vector <int> path;
@@ -122,13 +123,13 @@ class graph{
         for(int i=1;i<=n*m;i++){
             if(!graphtops[i].wall){
                 if(i - m > 0 && !(graphtops[i-m].wall)){
-                        this->graphtops[i]->linked.push_back(i-m);}
+                        this->graphtops[i].linked.push_back(i-m);}
                 if(i + m <= n*m && !(graphtops[i+m].wall)){
-                        this->graphtops[i]->linked.push_back(i+m);}
+                        this->graphtops[i].linked.push_back(i+m);}
                 if((i+1)%m!=0 && i!=n*m && !(graphtops[i+1].wall)){
-                        this->graphtops[i]->linked.push_back(i+1);}
+                        this->graphtops[i].linked.push_back(i+1);}
                 if((i+1)%m!=1 && i!=1 && !(graphtops[i-1].wall)){
-                        this->graphtops[i]->linked.push_back(i-1);}
+                        this->graphtops[i].linked.push_back(i-1);}
             }
         }
     }
@@ -142,7 +143,9 @@ class graph{
     }
 
     void output(){
-        char filename
+        char filename[256];
+        cout<<"Enter file to write path\n";
+        gets(filename);
         remove(filename);
         ofstream f(filename);
         if(!f){cout<<"Error during reading the file\n";exit(1);}
