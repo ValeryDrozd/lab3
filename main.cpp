@@ -84,7 +84,7 @@ public:
         }
         else{
             queueNode* temp = this->head;
-            while(temp->next!=nullptr && val.distance(finish)+way<temp->next->distance){
+            while(temp->next!=nullptr && val.distance(finish)+way>temp->next->distance){
                 temp = temp->next;
             }
             queueNode* toPush = new queueNode;
@@ -158,25 +158,37 @@ class graph{
     void astar(){
         int distance[n*m+1] = {INT_MAX};
         int from[n*m+1] = {INT_MAX};
+        for(int i=1;i<=n*m+1;i++){
+            distance[i] = INT_MAX;
+            from[i] = INT_MAX;
+        }
+        bool visited[n*m+1] = {false};
         priorityQueue Q;
-        Q.push(this->graphtops[this->start],this->graphtops[this->finish]);
-        distance[start] = 0;
-        from[start] = -1;
-        while(Q.sz>0 && from[finish]!=INT_MAX){
-            for(int i=0;i<Q.front().linked;i++){
+        Q.push(this->graphtops[this->start],0,this->graphtops[this->finish]);
+        distance[this->start] = 0;
+        from[this->start] = -1;
+        while(Q.sz>0 && from[this->finish]==INT_MAX){
+            graphNode smth = Q.front();
+            visited[smth.number] = 1;
+            for(int i=0;i<Q.front().linked.size();i++){
                 if(distance[Q.front().linked[i]]>distance[Q.front().number]+1){
                     distance[Q.front().linked[i]] = distance[Q.front().number] + 1;
                     from[Q.front().linked[i]] = Q.front().number;
                 }
-                Q.push(this->graphtops[Q.front().linked[i]],distance[Q.front().linked[i]],this->finish);
+                if(visited[Q.front().linked[i]]==0)Q.push(this->graphtops[Q.front().linked[i]],distance[Q.front().linked[i]],this->graphtops[this->finish]);
             }
             Q.pop();
+            if(visited[this->finish]==1)break;
         }
-        int current = finish;
+        cout<<"Astar completed\n";
+        int current = this->finish;
         while(from[current]!=-1){
             this->path.push_back(current);
             current = from[current];
         }
+        this->path.push_back(this->start);
+        for(int i=this->path.size() - 1;i>=0;i--)
+            this->graphtops[this->path[i]].pathNumb = this->path.size() - i;
     }
 
     void output(){
