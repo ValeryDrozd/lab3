@@ -7,18 +7,19 @@ using namespace std;
 class graphNode{
 public:
     bool wall;
-    int row,col,pathNumb;
+    int row,col,pathNumb,number;
     vector <int> linked;
     graphNode(){
         this->wall = 1;
         this->row = 1;
         this->col = 1;
     }
-    graphNode(int col,int row,bool wall = 1){
+    graphNode(int col,int row,int number,bool wall = 1){
         this->wall = wall;
         this->row = row;
         this->col = col;
         this->pathNumb = -1;
+        this->number = number;
     }
     ~graphNode(){
 
@@ -38,10 +39,15 @@ public:
 class queueNode
 {
 public:
+    int distance;
     graphNode val;
     queueNode* next;
-    queueNode();
-    ~queueNode();
+    queueNode(){
+
+    }
+    ~queueNode(){
+
+    }
 
 };
 
@@ -69,21 +75,33 @@ public:
                 this->sz--;
         }
     }
-    void push(graphNode val,graphNode finish){
-        queueNode* temp = this->head;
-        while(temp->next!=nullptr && val.distance(finish)>temp->next->val.distance(finish)){
-            temp = temp->next;
+    void push(graphNode val,int way,graphNode finish){
+        if(this->sz==0){
+            this->head = new queueNode;
+            this->head->val = val;
+            this->head->distance = this->head->val.distance(finish) + way;
+            this->head->next = nullptr;
         }
-        queueNode* toPush = new queueNode;
-        toPush->val = val;
-        toPush->next = temp->next;
-        temp->next = toPush;
+        else{
+            queueNode* temp = this->head;
+            while(temp->next!=nullptr && val.distance(finish)+way<temp->next->distance){
+                temp = temp->next;
+            }
+            queueNode* toPush = new queueNode;
+            toPush->val = val;
+            toPush->distance = val.distance(finish)+way;
+            toPush->next = temp->next;
+            temp->next = toPush;
+        }
+
         this->sz++;
     }
     graphNode front(){
         return head->val;
     }
-    ~priorityQueue();
+    ~priorityQueue(){
+
+    }
 
 };
 
@@ -114,7 +132,7 @@ class graph{
                 if(s[j]=='S')this->start = (i-1)*n+(j/2)+1;
                 else
                 if(s[j]=='F')this->finish = (i-1)*n+(j/2)+1;
-                this->graphtops[(i-1)*n+(j/2)+1] = graphNode(i,(j/2)+1,(s[j]=='X'));
+                this->graphtops[(i-1)*n+(j/2)+1] = graphNode(i,(j/2)+1,(i-1)*n+(j/2)+1,(s[j]=='X'));
             }
         }
         f.close();
@@ -139,7 +157,26 @@ class graph{
 
     void astar(){
         int distance[n*m+1] = {INT_MAX};
-
+        int from[n*m+1] = {INT_MAX};
+        priorityQueue Q;
+        Q.push(this->graphtops[this->start],this->graphtops[this->finish]);
+        distance[start] = 0;
+        from[start] = -1;
+        while(Q.sz>0 && from[finish]!=INT_MAX){
+            for(int i=0;i<Q.front().linked;i++){
+                if(distance[Q.front().linked[i]]>distance[Q.front().number]+1){
+                    distance[Q.front().linked[i]] = distance[Q.front().number] + 1;
+                    from[Q.front().linked[i]] = Q.front().number;
+                }
+                Q.push(this->graphtops[Q.front().linked[i]],distance[Q.front().linked[i]],this->finish);
+            }
+            Q.pop();
+        }
+        int current = finish;
+        while(from[current]!=-1){
+            this->path.push_back(current);
+            current = from[current];
+        }
     }
 
     void output(){
@@ -165,5 +202,6 @@ class graph{
 
 int main(){
     graph g;
+    g.astar();
     g.output();
 }
