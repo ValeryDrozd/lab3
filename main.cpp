@@ -43,14 +43,11 @@ public:
     graphNode val;
     queueNode* next;
     queueNode(){
-
     }
     ~queueNode(){
-
     }
 
 };
-
 
 
 ///=========================
@@ -116,6 +113,7 @@ class graph{
     graphNode* graphtops;
     vector <int> path;
     graph(){
+        this->path.clear();
         ifstream f;
         char filename[256];
         cout<<"Enter path to file with maze\n";
@@ -129,10 +127,10 @@ class graph{
             getline(f,s);
             s = " " + s;
             for(int j=1;j<=m*2;j+=2){
-                if(s[j]=='S')this->start = (i-1)*n+(j/2)+1;
+                if(s[j]=='S')this->start = (i-1)*m+(j/2)+1;
                 else
-                if(s[j]=='F')this->finish = (i-1)*n+(j/2)+1;
-                this->graphtops[(i-1)*n+(j/2)+1] = graphNode(i,(j/2)+1,(i-1)*n+(j/2)+1,(s[j]=='X'));
+                if(s[j]=='F')this->finish = (i-1)*m+(j/2)+1;
+                this->graphtops[(i-1)*m+(j/2)+1] = graphNode(i,(j/2)+1,(i-1)*m+(j/2)+1,(s[j]=='X'));
             }
         }
         f.close();
@@ -170,7 +168,7 @@ class graph{
         while(Q.sz>0 && from[this->finish]==INT_MAX){
             graphNode smth = Q.front();
             visited[smth.number] = 1;
-            for(int i=0;i<Q.front().linked.size();i++){
+            for(int i=0;i<Q.front().linked.size();
                 if(distance[Q.front().linked[i]]>distance[Q.front().number]+1){
                     distance[Q.front().linked[i]] = distance[Q.front().number] + 1;
                     from[Q.front().linked[i]] = Q.front().number;
@@ -181,17 +179,23 @@ class graph{
             if(visited[this->finish]==1)break;
         }
         cout<<"Astar completed\n";
-        int current = this->finish;
-        while(from[current]!=-1){
-            this->path.push_back(current);
-            current = from[current];
+        if(visited[this->finish]){
+            int current = this->finish;
+            while(from[current]!=-1){
+                this->path.push_back(current);
+                current = from[current];
+            }
+            this->path.push_back(this->start);
+            for(int i=this->path.size() - 1;i>=0;i--)
+                this->graphtops[this->path[i]].pathNumb = this->path.size() - i;
         }
-        this->path.push_back(this->start);
-        for(int i=this->path.size() - 1;i>=0;i--)
-            this->graphtops[this->path[i]].pathNumb = this->path.size() - i;
+
+
+
     }
 
     void output(){
+        if(this->path.size()==0){cout<<"There is no path between start and finish top\n";return;}
         char filename[256];
         cout<<"Enter file to write path\n";
         gets(filename);
