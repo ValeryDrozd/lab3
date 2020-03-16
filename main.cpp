@@ -43,11 +43,14 @@ public:
     graphNode val;
     queueNode* next;
     queueNode(){
+
     }
     ~queueNode(){
+
     }
 
 };
+
 
 
 ///=========================
@@ -113,12 +116,13 @@ class graph{
     graphNode* graphtops;
     vector <int> path;
     graph(){
-        this->path.clear();
+        path.clear();
         ifstream f;
         char filename[256];
         cout<<"Enter path to file with maze\n";
         gets(filename);
         f.open(filename);
+        if(!f){cout<<"Error during reading the file\n";exit(1);}
         f>>this->n>>this->m;
         this->graphtops = new graphNode[this->n*this->m+1];
         f.ignore(256,'\n');
@@ -165,10 +169,10 @@ class graph{
         Q.push(this->graphtops[this->start],0,this->graphtops[this->finish]);
         distance[this->start] = 0;
         from[this->start] = -1;
-        while(Q.sz>0 && from[this->finish]==INT_MAX){
+        while(Q.sz>0 && !visited[this->finish]){
             graphNode smth = Q.front();
             visited[smth.number] = 1;
-            for(int i=0;i<Q.front().linked.size();
+            for(int i=0;i<Q.front().linked.size();i++){
                 if(distance[Q.front().linked[i]]>distance[Q.front().number]+1){
                     distance[Q.front().linked[i]] = distance[Q.front().number] + 1;
                     from[Q.front().linked[i]] = Q.front().number;
@@ -176,7 +180,6 @@ class graph{
                 if(visited[Q.front().linked[i]]==0)Q.push(this->graphtops[Q.front().linked[i]],distance[Q.front().linked[i]],this->graphtops[this->finish]);
             }
             Q.pop();
-            if(visited[this->finish]==1)break;
         }
         cout<<"Astar completed\n";
         if(visited[this->finish]){
@@ -189,13 +192,10 @@ class graph{
             for(int i=this->path.size() - 1;i>=0;i--)
                 this->graphtops[this->path[i]].pathNumb = this->path.size() - i;
         }
-
-
-
     }
 
     void output(){
-        if(this->path.size()==0){cout<<"There is no path between start and finish top\n";return;}
+        if(this->path.size()==0){cout<<"There is no way from start to finish top\n";return;}
         char filename[256];
         cout<<"Enter file to write path\n";
         gets(filename);
@@ -203,12 +203,12 @@ class graph{
         ofstream f(filename);
         if(!f){cout<<"Error during reading the file\n";exit(1);}
         for(int i=1;i<=n*m;i++){
-            if(this->graphtops[i].wall)f<<"X"<<"\t";
+            if(this->graphtops[i].wall)f<<"X\t";
             else
             if(this->graphtops[i].pathNumb==-1)f<<" \t";
             else
                 f<<this->graphtops[i].pathNumb<<'\t';
-            if(i%n==0)f<<endl;
+            if(i%m==0)f<<endl;
         }
         f.close();
         cout<<"Writing to the file completed\n";
