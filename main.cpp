@@ -7,7 +7,7 @@ using namespace std;
 class graphNode{
 public:
     bool wall;
-    int row,col,pathNumb,number;
+    int row,col,number;
     vector <int> linked;
     graphNode(){
         this->wall = 1;
@@ -18,7 +18,6 @@ public:
         this->wall = wall;
         this->row = row;
         this->col = col;
-        this->pathNumb = -1;
         this->number = number;
     }
     ~graphNode(){
@@ -189,8 +188,6 @@ class graph{
                 current = from[current];
             }
             this->path.push_back(this->start);
-            for(int i=this->path.size() - 1;i>=0;i--)
-                this->graphtops[this->path[i]].pathNumb = this->path.size() - i;
         }
     }
 
@@ -203,11 +200,11 @@ class graph{
         ofstream f(filename);
         if(!f){cout<<"Error during reading the file\n";exit(1);}
         for(int i=1;i<=n*m;i++){
-            if(this->graphtops[i].wall)f<<"X\t";
+            if(this->graphtops[i].wall)f<<"X ";
             else
-            if(this->graphtops[i].pathNumb==-1)f<<" \t";
+            if(count(this->path.begin(),this->path.end(),i)==1)f<<"* ";
             else
-                f<<this->graphtops[i].pathNumb<<'\t';
+                f<<"  ";
             if(i%m==0)f<<endl;
         }
         f.close();
