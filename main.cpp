@@ -202,6 +202,10 @@ class graph{
         for(int i=1;i<=n*m;i++){
             if(this->graphtops[i].wall)f<<"X ";
             else
+            if(i==this->start)cout<<"S ";
+            else
+            if(i==this->finish)cout<<"F ";
+            else
             if(count(this->path.begin(),this->path.end(),i)==1)f<<"* ";
             else
                 f<<"  ";
