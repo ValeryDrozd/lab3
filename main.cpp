@@ -33,33 +33,22 @@ public:
 
 
 ///========================
-///Class with node of queue
+///STRUCT with node of queue
 ///========================
-class queueNode
-{
-public:
+struct queueNode{
     int distance;
     graphNode val;
     queueNode* next;
-    queueNode(){
-
-    }
-    ~queueNode(){
-
-    }
-
 };
-
 
 
 ///=========================
 ///Class with priority queue
 ///=========================
 class priorityQueue
-{
-public:
-    int sz;
+{   int sz;
     queueNode *head;
+public:
     priorityQueue(){
         this->sz = 0;
         this->head = nullptr;
@@ -73,6 +62,9 @@ public:
                 delete temp;
                 this->sz--;
         }
+    }
+    int size(){
+        return this->sz;
     }
     void push(graphNode val,int way,graphNode finish){
         if(this->sz==0){
@@ -110,8 +102,8 @@ public:
 ///CLASS WITH GRAPH
 ///=====================
 class graph{
-    public:
     int n,m,start,finish;
+    public:
     graphNode* graphtops;
     vector <int> path;
     graph(){
@@ -168,7 +160,7 @@ class graph{
         Q.push(this->graphtops[this->start],0,this->graphtops[this->finish]);
         distance[this->start] = 0;
         from[this->start] = -1;
-        while(Q.sz>0 && !visited[this->finish]){
+        while(Q.size()>0 && !visited[this->finish]){
             graphNode smth = Q.front();
             visited[smth.number] = 1;
             for(int i=0;i<Q.front().linked.size();i++){
@@ -202,9 +194,9 @@ class graph{
         for(int i=1;i<=n*m;i++){
             if(this->graphtops[i].wall)f<<"X ";
             else
-            if(i==this->start)cout<<"S ";
+            if(i==this->start)f<<"S ";
             else
-            if(i==this->finish)cout<<"F ";
+            if(i==this->finish)f<<"F ";
             else
             if(count(this->path.begin(),this->path.end(),i)==1)f<<"* ";
             else
