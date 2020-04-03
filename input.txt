@@ -2,8 +2,8 @@
 X X X X X X X X
 X       X X F X
 X   X   X X   X
-X   X         X
+X S X         X
 X   X   X   X X
 X   X   X   X X
-X S X       X X
+X   X       X X
 X X X X X X X X

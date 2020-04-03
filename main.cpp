@@ -8,7 +8,7 @@ class graphNode{
 public:
     bool wall;
     int row,col,number;
-    vector <int> linked;
+    vector <pair <int,int> > linked;
     graphNode(){
         this->wall = 1;
         this->row = 1;
@@ -23,13 +23,13 @@ public:
     ~graphNode(){
 
     }
-    void makeLink(int finish){
-        this->linked.push_back(finish);
-    }
+
     int distance(graphNode to){
         return abs(to.col - this->col)+abs(to.row - this->row);
     }
 };
+
+
 
 
 ///========================
@@ -132,14 +132,48 @@ class graph{
         cout<<"Read completed\n";
         for(int i=1;i<=n*m;i++){
             if(!graphtops[i].wall){
-                if(i - m > 0 && !(graphtops[i-m].wall)){
-                        this->graphtops[i].linked.push_back(i-m);}
+                if(i-m>0){
+                    if(!(graphtops[i-m].wall))this->graphtops[i].linked.push_back({i-m,1});
+                    else{
+                        if(i-2*m>0 && !(graphtops[i-2*m].wall)){
+                            this->graphtops[i].linked.push_back({i-2*m,3});
+                        }
+                    }
+                }
+                if(i+m<=n*m){
+                    if(!(graphtops[i+m].wall))this->graphtops[i].linked.push_back({i+m,1});
+                    else{
+                        if(i+2*m<=n*m && !(graphtops[i+2*m].wall)){
+                            this->graphtops[i].linked.push_back({i+2*m,3});
+                        }
+                    }
+                }
+                if(i%m!=0 && i!=n*m){
+                    if(!(graphtops[i+1].wall))this->graphtops[i].linked.push_back({i+1,1});
+                    else{
+                        if((i+2)%m!=1 && i+2<=n*m && !(graphtops[i+2].wall)){
+                            this->graphtops[i].linked.push_back({i+2,3});
+                        }
+                    }
+                }
+                if(i%m!=1 && i!=1){
+                    if(!(graphtops[i-1].wall))this->graphtops[i].linked.push_back({i-1,1});
+                    else{
+                        if((i-2)%m!=0 && !(graphtops[i-2].wall)){
+                            this->graphtops[i].linked.push_back({i-2,3});
+                        }
+                    }
+                }
+               /* if(i - m > 0 && !(graphtops[i-m].wall)){
+                        this->graphtops[i].linked.push_back(i-m,1);}
                 if(i + m <= n*m && !(graphtops[i+m].wall)){
-                        this->graphtops[i].linked.push_back(i+m);}
+                        this->graphtops[i].linked.push_back(i+m,1);}
                 if((i+1)%m!=0 && i!=n*m && !(graphtops[i+1].wall)){
-                        this->graphtops[i].linked.push_back(i+1);}
+                        this->graphtops[i].linked.push_back(i+1,1);}
                 if((i+1)%m!=1 && i!=1 && !(graphtops[i-1].wall)){
-                        this->graphtops[i].linked.push_back(i-1);}
+                        this->graphtops[i].linked.push_back(i-1,1);}
+                if()
+                */
             }
         }
         cout<<"Graph is made\n";
@@ -164,11 +198,11 @@ class graph{
             graphNode smth = Q.front();
             visited[smth.number] = 1;
             for(int i=0;i<Q.front().linked.size();i++){
-                if(distance[Q.front().linked[i]]>distance[Q.front().number]+1){
-                    distance[Q.front().linked[i]] = distance[Q.front().number] + 1;
-                    from[Q.front().linked[i]] = Q.front().number;
+                if(distance[Q.front().linked[i].first]>distance[Q.front().number]+Q.front().linked[i].second){
+                    distance[Q.front().linked[i].first] = distance[Q.front().number] + Q.front().linked[i].second;
+                    from[Q.front().linked[i].first] = Q.front().number;
                 }
-                if(visited[Q.front().linked[i]]==0)Q.push(this->graphtops[Q.front().linked[i]],distance[Q.front().linked[i]],this->graphtops[this->finish]);
+                if(visited[Q.front().linked[i].first]==0)Q.push(this->graphtops[Q.front().linked[i].first],distance[Q.front().linked[i].first],this->graphtops[this->finish]);
             }
             Q.pop();
         }
@@ -176,8 +210,37 @@ class graph{
         if(visited[this->finish]){
             int current = this->finish;
             while(from[current]!=-1){
-                this->path.push_back(current);
-                current = from[current];
+                if((max(from[current],current) - min(from[current],current) == m) || (max(from[current],current) - min(from[current],current) == 1)){
+                    this->path.push_back(current);
+                    current = from[current];
+                }
+                else{
+                    if((from[current] - current)==2){ this->path.push_back(from[current]-1);}
+                    else
+                    if((from[current] - current)==-2){this->path.push_back(from[current]+1);}
+                    else
+                    if((from[current] - current)==2*m){ this->path.push_back(from[current]-(this->m));}
+                    else
+                    if((from[current] - current)==-2*m){this->path.push_back(from[current]+(this->m));}
+                    /*
+                    switch((from[current] - current)){
+                case(2):
+
+                    break;
+                case(-2):
+
+                    break;
+                case(2*this->m):
+
+                    break;
+                case(-2*this->m):
+
+                    break;
+                 //this->path.push_back(from[current]+1);
+                }*/
+                    this->path.push_back(current);
+                    current = from[current];
+                }
             }
             this->path.push_back(this->start);
         }
@@ -192,15 +255,15 @@ class graph{
         ofstream f(filename);
         if(!f){cout<<"Error during reading the file\n";exit(1);}
         for(int i=1;i<=n*m;i++){
-            if(this->graphtops[i].wall)f<<"X ";
-            else
             if(i==this->start)f<<"S ";
             else
             if(i==this->finish)f<<"F ";
             else
             if(count(this->path.begin(),this->path.end(),i)==1)f<<"* ";
             else
-                f<<"  ";
+            if(this->graphtops[i].wall)f<<"X ";
+            else
+            f<<"  ";
             if(i%m==0)f<<endl;
         }
         f.close();
